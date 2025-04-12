@@ -90,9 +90,9 @@ function AppContent() {
                 <Route
           path="/usermanagement"
           element={
-            <AdminRoute>
+            <ProtectedRoute>
               <UserManagement />
-            </AdminRoute>
+            </ProtectedRoute>
           }
         />
         
