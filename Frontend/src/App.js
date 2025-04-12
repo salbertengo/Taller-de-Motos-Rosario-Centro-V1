@@ -2,7 +2,6 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './hooks/useAuth';
 import Login from './pages/login';
-import Registration from './pages/userManagementPage';
 import Inventory from './pages/InventoryPage';
 import CustomersPage from './pages/customersPage';
 import JobsheetPage from './pages/jobsheetPage';
