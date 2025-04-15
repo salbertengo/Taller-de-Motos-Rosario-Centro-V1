@@ -55,13 +55,13 @@ const PaymentsPage = () => {
       field: 'id',
       width: 80,
       suppressMenu: true,
-      headerClass: 'custom-header-sumary'
+      headerClass: 'custom-header'
     },
     {
       headerName: 'Jobsheet',
       field: 'jobsheet_id',
       suppressMenu: true,
-      headerClass: 'custom-header-sumary',
+      headerClass: 'custom-header',
       cellRenderer: (params) => {
         return `#${params.value}`;
       }
@@ -70,7 +70,7 @@ const PaymentsPage = () => {
       headerName: 'Date',
       field: 'payment_date',
       suppressMenu: true,
-      headerClass: 'custom-header-sumary',
+      headerClass: 'custom-header',
       cellRenderer: (params) => {
         if (!params.value) return '';
         const date = new Date(params.value);
@@ -81,7 +81,7 @@ const PaymentsPage = () => {
       headerName: 'Amount',
       field: 'amount',
       suppressMenu: true,
-      headerClass: 'custom-header-sumary',
+      headerClass: 'custom-header',
       cellRenderer: (params) => {
         return `$${parseFloat(params.value).toFixed(2)}`;
       }
@@ -90,7 +90,7 @@ const PaymentsPage = () => {
       headerName: 'Method',
       field: 'method',
       suppressMenu: true,
-      headerClass: 'custom-header-sumary',
+      headerClass: 'custom-header',
       width: 100, // Added fixed width
       cellRenderer: (params) => {
         const method = params.value || 'cash';
@@ -155,7 +155,7 @@ const PaymentsPage = () => {
       headerName: 'Customer',
       field: 'customer_name',
       suppressMenu: true,
-      headerClass: 'custom-header-sumary'
+      headerClass: 'custom-header'
     },
     {
       headerName: 'Actions',
@@ -1030,39 +1030,6 @@ const PaymentsPage = () => {
               to { opacity: 1; transform: scale(1); }
             }
             
-            /* Uniform styles for AG Grid */
-.ag-theme-alpine {
-  --ag-header-height: 30px;
-  --ag-row-height: 50px;
-  --ag-header-foreground-color: #333;
-  --ag-header-background-color: #F9FBFF;
-  --ag-odd-row-background-color: #fff;
-  --ag-row-border-color: rgba(0, 0, 0, 0.1);
-  --ag-cell-horizontal-padding: 12px;
-  --ag-borders: none;
-  --ag-font-size: 14px;
-  --ag-font-family: Poppins, sans-serif; /* Usa la fuente principal de la aplicación */
-}
-
-/* Estilo de encabezado unificado */
-.ag-theme-alpine .ag-header {
-  border-bottom: 1px solid #5932EA;
-}
-
-.ag-theme-alpine .ag-cell {
-  display: flex;
-  align-items: center;
-}
-
-/* Una única clase de cabecera para todas las tablas */
-.custom-header {
-  background-color: #F9FBFF !important;
-  font-weight: 600 !important;
-  color: #333 !important;
-  border-bottom: 1px solid #5932EA !important;
-  text-align: left !important;
-  padding-left: 12px !important;
-}
 
 
             `}

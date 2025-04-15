@@ -957,10 +957,10 @@ const CustomersView = () => {
   };
 
   const customerColumnDefs = useMemo(() => [
-    { headerName: 'Name', field: 'name', flex: 2, headerClass: 'custom-header-inventory' },
-    { headerName: 'Phone', field: 'phone', flex: 1, headerClass: 'custom-header-inventory' },
-    { headerName: 'Email', field: 'email', flex: 2, headerClass: 'custom-header-inventory' },
-    { headerName: 'Address', field: 'address', flex: 2, headerClass: 'custom-header-inventory' },
+    { headerName: 'Name', field: 'name', flex: 2, headerClass: 'custom-header' },
+    { headerName: 'Phone', field: 'phone', flex: 1, headerClass: 'custom-header' },
+    { headerName: 'Email', field: 'email', flex: 2, headerClass: 'custom-header' },
+    { headerName: 'Address', field: 'address', flex: 2, headerClass: 'custom-header' },
     {
       headerName: 'Actions',
       width: 160,
@@ -982,7 +982,7 @@ const CustomersView = () => {
           />
         </ActionButtonsContainer>
       ),
-      headerClass: 'custom-header-inventory'
+      headerClass: 'custom-header'
     },
     {
       headerName: 'Actions',
@@ -999,13 +999,13 @@ const CustomersView = () => {
           />
         </ActionButtonsContainer>
       ),
-      headerClass: 'custom-header-inventory'
+      headerClass: 'custom-header'
     }
   ], []);
   
   const vehicleColumnDefs = useMemo(() => [
-    { headerName: 'License Plate', field: 'plate', flex: 1, headerClass: 'custom-header-inventory' },
-    { headerName: 'Model', field: 'model', flex: 2, headerClass: 'custom-header-inventory' },
+    { headerName: 'License Plate', field: 'plate', flex: 1, headerClass: 'custom-header' },
+    { headerName: 'Model', field: 'model', flex: 2, headerClass: 'custom-header' },
     {
       headerName: 'Edit',
       width: 70,
@@ -1025,7 +1025,7 @@ const CustomersView = () => {
           <FontAwesomeIcon icon={faEdit} style={{ fontSize: '14px' }} />
         </div>
       ),
-      headerClass: 'custom-header-inventory'
+      headerClass: 'custom-header'
     }
   ], []);
 

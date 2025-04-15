@@ -1049,38 +1049,7 @@ function UserManagement() {
               to { opacity: 1; transform: scale(1); }
             }
             
-            /* Uniform styles for AG Grid */
-            .ag-theme-alpine {
-              --ag-header-height: 30px;
-              --ag-row-height: 50px;
-              --ag-header-foreground-color: #333;
-              --ag-header-background-color: #F9FBFF;
-              --ag-odd-row-background-color: #fff;
-              --ag-row-border-color: rgba(0, 0, 0, 0.1);
-              --ag-cell-horizontal-padding: 12px;
-              --ag-borders: none;
-              --ag-font-size: 14px;
-              --ag-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            }
-            
-            .ag-theme-alpine .ag-header {
-              border-bottom: 1px solid #5932EA;
-            }
-            
-            .ag-theme-alpine .ag-cell {
-              display: flex;
-              align-items: center;
-            }
-            
-            .custom-header {
-              background-color: #F9FBFF !important;
-              font-weight: 600 !important;
-              color: #333 !important;
-              border-bottom: 1px solid #5932EA !important;
-              text-align: left !important;
-              padding-left: 12px !important;
-            }
-
+         
             /* Estilos para celdas con iconos */
             .cell-with-icon {
               display: flex;

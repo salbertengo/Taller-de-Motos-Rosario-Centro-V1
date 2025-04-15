@@ -9,7 +9,8 @@ import PaymentsPage from './pages/paymentsPage';
 import VehiclesPage from './pages/vehiclesPage';
 import UserManagement from './pages/userManagementPage';
 import FirstAdminSetup from './pages/register';
-
+import SpecificationManagementPage from './pages/specificationManagementPage';
+import AppointmentsPage from './pages/appointmentsPage';
 // Protected route component for admin-only routes
 const AdminRoute = ({ children }) => {
   const { isLoggedIn, isAdmin, loading } = useAuth();
@@ -96,6 +97,14 @@ function AppContent() {
             </AdminRoute>
           }
         />
+                <Route
+          path="/appointments"
+          element={
+            <ProtectedRoute>
+              <AppointmentsPage />
+            </ProtectedRoute>
+          }
+        />
         
         {/* Routes accessible by all users */}
         <Route
@@ -106,7 +115,14 @@ function AppContent() {
             </ProtectedRoute>
           }
         />
-        
+                <Route
+          path="/specifications"
+          element={
+            <ProtectedRoute>
+              <SpecificationManagementPage />
+            </ProtectedRoute>
+          }
+        />
         {/* Default redirect */}
         <Route path="/" element={
           <Navigate to={isLoggedIn ? "/jobsheets" : "/login"} />

@@ -22,6 +22,9 @@ import {
   ActionButton, 
   ActionButtonsContainer 
 } from '../components/common/ActionButtons';
+import BikeSpecificationsViewer from '../components/BikeSpecificationsViewer';
+import { useAuth } from '../hooks/useAuth'; // Para verificar si es admin
+
 const VehiclesPage = () => {
   // Main states
   const [vehicles, setVehicles] = useState([]);
@@ -45,6 +48,10 @@ const VehiclesPage = () => {
   const [showCommonModels, setShowCommonModels] = useState(false);
   const [showJobsheetModal, setShowJobsheetModal] = useState(false);
   const [completeJobsheet, setCompleteJobsheet] = useState(null);
+  const [activeTab, setActiveTab] = useState('details'); // Agregar un nuevo estado para las pestañas
+  const { isAdmin } = useAuth(); // Para verificar si es admin
+  const [selectedVehicle, setSelectedVehicle] = useState(null); // Estado para el vehículo seleccionado
+
   // Reference for AG Grid table
   const gridRef = useRef(null);
 
@@ -99,7 +106,7 @@ const VehiclesPage = () => {
           </div>
         );
       },
-      headerClass: "custom-header-sumary",
+      headerClass: "custom-header",
     },
     {
       headerName: 'License Plate',
@@ -158,7 +165,7 @@ const VehiclesPage = () => {
           </div>
         );
       },
-      headerClass: "custom-header-sumary",
+      headerClass: "custom-header",
     },
     {
       headerName: 'Customer',
@@ -177,7 +184,7 @@ const VehiclesPage = () => {
           </div>
         );
       },
-      headerClass: "custom-header-sumary",
+      headerClass: "custom-header",
     },
     {
       headerName: 'Last Service',
@@ -238,7 +245,7 @@ const VehiclesPage = () => {
           );
         }
       },
-      headerClass: "custom-header-sumary",
+      headerClass: "custom-header",
     },
     {
       headerName: 'Actions',
@@ -269,7 +276,7 @@ const VehiclesPage = () => {
           </ActionButtonsContainer>
         );
       },
-      headerClass: "custom-header-sumary",
+      headerClass: "custom-header",
     }
   ];
 
@@ -1730,6 +1737,54 @@ const VehiclesPage = () => {
             </div>
           )}
 
+          {/* Vehicle Detail Tabs */}
+          {selectedVehicle && (
+            <div className="vehicle-detail-container">
+              <div className="tabs mb-3">
+                <button 
+                  className={`btn ${activeTab === 'details' ? 'btn-primary' : 'btn-outline-primary'} me-2`}
+                  onClick={() => setActiveTab('details')}
+                >
+                  Detalles
+                </button>
+                <button 
+                  className={`btn ${activeTab === 'specs' ? 'btn-primary' : 'btn-outline-primary'} me-2`}
+                  onClick={() => setActiveTab('specs')}
+                >
+                  Especificaciones Técnicas
+                </button>
+                <button 
+                  className={`btn ${activeTab === 'history' ? 'btn-primary' : 'btn-outline-primary'}`}
+                  onClick={() => setActiveTab('history')}
+                >
+                  Historial
+                </button>
+              </div>
+              
+              {activeTab === 'details' && (
+                <div className="details-container">
+                  {/* Contenido actual de detalles */}
+                  <p>Información detallada del vehículo</p>
+                </div>
+              )}
+              
+              {activeTab === 'specs' && (
+                <BikeSpecificationsViewer 
+                  brand={selectedVehicle.brand}
+                  model={selectedVehicle.model}
+                  canEdit={isAdmin}
+                />
+              )}
+              
+              {activeTab === 'history' && (
+                <div className="history-container">
+                  {/* Contenido actual del historial */}
+                  <p>Historial de mantenimiento</p>
+                </div>
+              )}
+            </div>
+          )}
+
           <style>{`
             @keyframes spin {
               0% { transform: rotate(0deg); }
@@ -1742,36 +1797,7 @@ const VehiclesPage = () => {
             }
             
             /* Uniform styles for AG Grid */
-            .ag-theme-alpine {
-  --ag-header-height: 30px;
-  --ag-row-height: 50px;
-  --ag-header-foreground-color: #333;
-  --ag-header-background-color: #F9FBFF;
-  --ag-odd-row-background-color: #fff;
-  --ag-row-border-color: rgba(0, 0, 0, 0.1);
-  --ag-cell-horizontal-padding: 12px;
-  --ag-borders: none;
-  --ag-font-size: 14px;
-  --ag-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-}
-
-            
-.ag-theme-alpine .ag-header {
-  border-bottom: 1px solid #5932EA;
-}
-
-.ag-theme-alpine .ag-cell {
-  display: flex;
-  align-items: center;
-}
-.custom-header {
-  background-color: #F9FBFF !important;
-  font-weight: 600 !important;
-  color: #333 !important;
-  border-bottom: 1px solid #5932EA !important;
-  text-align: left !important;
-  padding-left: 12px !important;
-}
+        
           `}</style>
         </div>
       </div>

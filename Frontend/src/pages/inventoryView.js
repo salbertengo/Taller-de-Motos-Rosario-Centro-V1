@@ -229,14 +229,14 @@ const InventoryView = () => {
   };
 
   const columnDefs = useMemo(() => [
-    { headerName: 'SKU', field: 'sku', width: 250, headerClass: 'custom-header-inventory', suppressMenu: true },
-    { headerName: 'Name', field: 'name', width: 300, headerClass: 'custom-header-inventory', suppressMenu: true },
-    { headerName: 'Category', field: 'category', width: 120, headerClass: 'custom-header-inventory', suppressMenu: true },
-    { headerName: 'Brand', field: 'brand', width: 120, headerClass: 'custom-header-inventory', suppressMenu: true },
-    { headerName: 'Stock', field: 'stock', width: 80, headerClass: 'custom-header-inventory', suppressMenu: true },
-    { headerName: 'Min', field: 'min', width: 80, headerClass: 'custom-header-inventory', suppressMenu: true },
-    { headerName: 'Cost', field: 'cost', width: 80, headerClass: 'custom-header-inventory', suppressMenu: true },
-    { headerName: 'Sale', field: 'sale', width: 80, headerClass: 'custom-header-inventory', suppressMenu: true },
+    { headerName: 'SKU', field: 'sku', width: 250, headerClass: 'custom-header', suppressMenu: true },
+    { headerName: 'Name', field: 'name', width: 300, headerClass: 'custom-header', suppressMenu: true },
+    { headerName: 'Category', field: 'category', width: 120, headerClass: 'custom-header', suppressMenu: true },
+    { headerName: 'Brand', field: 'brand', width: 120, headerClass: 'custom-header', suppressMenu: true },
+    { headerName: 'Stock', field: 'stock', width: 80, headerClass: 'custom-header', suppressMenu: true },
+    { headerName: 'Min', field: 'min', width: 80, headerClass: 'custom-header', suppressMenu: true },
+    { headerName: 'Cost', field: 'cost', width: 80, headerClass: 'custom-header', suppressMenu: true },
+    { headerName: 'Sale', field: 'sale', width: 80, headerClass: 'custom-header', suppressMenu: true },
     {
       headerName: 'Actions',
       width: 160,
@@ -265,7 +265,7 @@ const InventoryView = () => {
           />
         </ActionButtonsContainer>
       ),
-      headerClass: 'custom-header-inventory'
+      headerClass: 'custom-header'
     }
   ], []);
 

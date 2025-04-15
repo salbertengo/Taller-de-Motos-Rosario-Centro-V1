@@ -7,6 +7,8 @@ const vehicleRoutes = require('./routes/vehicleRoutes');
 const jobsheetRoutes = require('./routes/jobsheetRoutes');
 const laborRoutes = require('./routes/laborRoutes');
 const userRoutes = require('./routes/userRoutes');
+const specificationsRoutes = require('./routes/specificationsRoutes'); 
+const appointmentRoutes = require('./routes/appointmentRoutes'); 
 
 const bodyParser = require('body-parser');
 const path = require('path');
@@ -30,6 +32,8 @@ app.use('/vehicles', vehicleRoutes);
 app.use('/jobsheets', jobsheetRoutes);
 app.use('/labor', laborRoutes);
 app.use('/users', userRoutes);
+app.use('/appointments', appointmentRoutes); 
+app.use('/specifications', specificationsRoutes); 
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });

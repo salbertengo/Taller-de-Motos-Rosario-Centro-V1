@@ -299,3 +299,35 @@ html, body {
 .sidebar-button i {
   margin-right: 10px;
 }
+
+.ag-theme-alpine {
+  --ag-header-height: 38px;
+  --ag-row-height: 46px;
+  --ag-header-foreground-color: #333;
+  --ag-header-background-color: #F9FBFF;
+  --ag-odd-row-background-color: #fff;
+  --ag-row-border-color: rgba(0, 0, 0, 0.05);
+  --ag-cell-horizontal-padding: 12px;
+  --ag-borders: none;
+  --ag-font-size: 14px;
+  --ag-font-family: Poppins, sans-serif;
+}
+
+/* Clase única para todos los headers */
+.custom-header {
+  background-color: #F9FBFF !important;
+  font-weight: 600 !important;
+  color: #333 !important;
+  border-bottom: 1px solid #5932EA !important;
+  text-align: left !important;
+  padding-left: 12px !important;
+  font-size: 13px !important;
+  line-height: 38px !important;
+}
+
+.custom-header-inventory, .custom-header-sumary {
+  composes: custom-header;
+  color: #B5B7C0 !important;
+  font-size: 11px !important;
+  font-weight: 650 !important;
+}

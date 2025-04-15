@@ -41,7 +41,8 @@ const FirstAdminSetup = () => {
     
     try {
       // Usando la ruta estándar de registro
-      const response = await axios.post('/auth/register', {
+      const response = await axios.post('http://localhost:3000/auth/register', {
+
         name: formData.name,
         username: formData.username,
         password: formData.password,
@@ -52,7 +53,7 @@ const FirstAdminSetup = () => {
       
       // Redirección al login después de 2 segundos
       setTimeout(() => {
-        navigate('/login');
+        navigate('/login'); 
       }, 2000);
       
     } catch (err) {

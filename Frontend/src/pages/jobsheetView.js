@@ -11,11 +11,13 @@ import {
   faSearch,
   faBoxOpen,
   faTools,
-  faMoneyBillWave
+  faMoneyBillWave,
+  faMotorcycle
 } from "@fortawesome/free-solid-svg-icons";
 import "@fortawesome/fontawesome-svg-core/styles.css";
 import Invoice from "../components/invoice";
 import CreateJobsheetModal from '../pages/createJobsheeModal';
+import BikeSpecificationsViewer from '../components/BikeSpecificationsViewer';
 import { 
   ActionButton, 
   ActionButtonsContainer 
@@ -28,8 +30,7 @@ const JobsheetView = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [customers, setCustomers] = useState([]);
-  const [setVehicles] = useState([]);
-  const [currentJobsheet, setCurrentJobsheet] = useState(null);
+  const [vehicles, setVehicles] = useState([]);  const [currentJobsheet, setCurrentJobsheet] = useState(null);
   const [isHovered, setIsHovered] = useState(false);
   const [loading, setLoading] = useState(true);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -47,6 +48,7 @@ const JobsheetView = () => {
     message: "",
     type: "",
   });
+
   const [isLoading, setIsLoading] = useState(false);
   const searchInputRef = useRef(null);
   const [statusFilter, setStatusFilter] = useState("all");
@@ -74,13 +76,13 @@ const JobsheetView = () => {
   const [laborDescription, setLaborDescription] = useState("");
   const [laborPrice, setLaborPrice] = useState("");
   const [showLaborModal, setShowLaborModal] = useState(false);
+  const [showSpecsModal, setShowSpecsModal] = useState(false);
+  const [showSpecsPanel, setShowSpecsPanel] = useState(false);
 
   const [formData, setFormData] = useState({
     customer_id: "",
     vehicle_id: "",
     description: "",
-    state: "pending",
-    date_created: new Date().toISOString().split("T")[0],
   });
 
   const columnDefs = [
@@ -89,25 +91,25 @@ const JobsheetView = () => {
       field: "id",
       width: 80,
       suppressMenu: true,
-      headerClass: "custom-header-sumary",
+      headerClass: "custom-header",
     },
     {
       headerName: "Customer",
       field: "customer_name",
       suppressMenu: true,
-      headerClass: "custom-header-sumary",
+      headerClass: "custom-header",
     },
     {
       headerName: "Model",
       field: "vehicle_model",
       suppressMenu: true,
-      headerClass: "custom-header-sumary",
+      headerClass: "custom-header",
     },
     {
       headerName: "Plate",
       field: "license_plate",
       suppressMenu: true,
-      headerClass: "custom-header-sumary",
+      headerClass: "custom-header",
       width: 120,
       cellRenderer: (params) => {
         if (!params.data) return null;
@@ -155,7 +157,7 @@ const JobsheetView = () => {
                   color: "white",
                   fontFamily: "monospace",
                   fontWeight: "bold",
-                  fontSize: "13px",
+                  fontSize: "14px",
                   textAlign: "center",
                   borderBottom: "1px solid #444",
                   display: "flex",
@@ -170,7 +172,7 @@ const JobsheetView = () => {
                   color: "white",
                   fontFamily: "monospace",
                   fontWeight: "bold",
-                  fontSize: "13px",
+                  fontSize: "14px",
                   textAlign: "center",
                   display: "flex",
                   alignItems: "center",
@@ -188,7 +190,7 @@ const JobsheetView = () => {
       headerName: "Created",
       field: "created_at",
       suppressMenu: true,
-      headerClass: "custom-header-sumary",
+      headerClass: "custom-header",
       cellRenderer: (params) => {
         if (!params.data.created_at) return "—";
         const date = new Date(params.data.created_at);
@@ -199,7 +201,7 @@ const JobsheetView = () => {
       headerName: "State",
       field: "state",
       suppressMenu: true,
-      headerClass: "custom-header-sumary",
+      headerClass: "custom-header",
       cellRenderer: (params) => {
         const state = params.data.state || "pending";
         let color = "#FF9500";
@@ -219,7 +221,7 @@ const JobsheetView = () => {
               border: `1px solid ${color}40`,
               borderRadius: "12px",
               padding: "4px 10px",
-              fontSize: "12px",
+              fontSize: "14px",
               fontWeight: 500,
               cursor: "pointer",
               textTransform: "capitalize",
@@ -236,7 +238,7 @@ const JobsheetView = () => {
       headerName: "Items",
       field: "items",
       width: 160,
-      headerClass: "custom-header-sumary",
+      headerClass: "custom-header",
       cellRenderer: (params) => {
         if (!params.data) return '';
         return (
@@ -255,7 +257,7 @@ const JobsheetView = () => {
       headerName: "Payments",
       field: "payments",
       width: 160,
-      headerClass: "custom-header-sumary",
+      headerClass: "custom-header",
       cellRenderer: (params) => {
         if (!params.data) return '';
           return (
@@ -274,7 +276,7 @@ const JobsheetView = () => {
       headerName: "Labor",
       field: "labor",
       width: 160,
-      headerClass: "custom-header-sumary",
+      headerClass: "custom-header",
       cellRenderer: (params) => {
         if (!params.data) return '';
         return (
@@ -293,7 +295,7 @@ const JobsheetView = () => {
       headerName: "Actions",
       field: "actions",
       width: 160,
-      headerClass: "custom-header-sumary",
+      headerClass: "custom-header",
       cellRenderer: (params) => {
         if (!params.data) return '';
         return (
@@ -314,6 +316,28 @@ const JobsheetView = () => {
         );
       },
     },
+    {
+      headerName: "Vehicle Info",
+      field: "vehicle_info",
+      width: 160,
+      headerClass: "custom-header",
+      cellRenderer: (params) => {
+        if (!params.data) return null;
+        return (
+          <div className="vehicle-info">
+            <ActionButton
+              icon={faMotorcycle}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleViewSpecifications(params.data);
+              }}
+              tooltip="View Specifications"
+              type="primary"
+            />
+          </div>
+        );
+      },
+    },
   ];
 
 
@@ -324,6 +348,10 @@ const JobsheetView = () => {
     setEditingLaborId(labor.id);
     setEditedLaborPrice(labor.price || "0");
   };
+const handleViewSpecifications = (jobsheet) => {
+  setCurrentJobsheet(jobsheet);
+  setShowSpecsModal(true);
+};
   const handleSaveEditedLabor = async () => {
     if (!editingLaborId) return;
     
@@ -1922,7 +1950,7 @@ const JobsheetView = () => {
                       >
                         <div
                           style={{
-                            fontSize: "13px",
+                            fontSize: "14px",
                             color: "#555",
                             marginBottom: "5px",
                           }}
@@ -1965,7 +1993,7 @@ const JobsheetView = () => {
                       >
                         <div
                           style={{
-                            fontSize: "13px",
+                            fontSize: "14px",
                             color: "#555",
                             marginBottom: "5px",
                           }}
@@ -2004,7 +2032,7 @@ const JobsheetView = () => {
                             style={{
                               padding: "4px 10px",
                               borderRadius: "100px",
-                              fontSize: "12px",
+                              fontSize: "14px",
                               fontWeight: "500",
                               backgroundColor:
                                 currentJobsheet.amount_paid >=
@@ -2095,7 +2123,7 @@ const JobsheetView = () => {
                                   style={{
                                     padding: "10px 12px",
                                     textAlign: "left",
-                                    fontSize: "13px",
+                                    fontSize: "14px",
                                     color: "#555",
                                     fontWeight: "600",
                                     borderBottom: "1px solid #eee",
@@ -2107,7 +2135,7 @@ const JobsheetView = () => {
                                   style={{
                                     padding: "10px 12px",
                                     textAlign: "center",
-                                    fontSize: "13px",
+                                    fontSize: "14px",
                                     color: "#555",
                                     fontWeight: "600",
                                     borderBottom: "1px solid #eee",
@@ -2120,7 +2148,7 @@ const JobsheetView = () => {
                                   style={{
                                     padding: "10px 12px",
                                     textAlign: "right",
-                                    fontSize: "13px",
+                                    fontSize: "14px",
                                     color: "#555",
                                     fontWeight: "600",
                                     borderBottom: "1px solid #eee",
@@ -2133,7 +2161,7 @@ const JobsheetView = () => {
                                   style={{
                                     padding: "10px 12px",
                                     textAlign: "right",
-                                    fontSize: "13px",
+                                    fontSize: "14px",
                                     color: "#555",
                                     fontWeight: "600",
                                     borderBottom: "1px solid #eee",
@@ -2305,7 +2333,7 @@ const JobsheetView = () => {
                                   style={{
                                     padding: "10px 12px",
                                     textAlign: "left",
-                                    fontSize: "13px",
+                                    fontSize: "14px",
                                     color: "#555",
                                     fontWeight: "600",
                                     borderBottom: "1px solid #eee",
@@ -2317,7 +2345,7 @@ const JobsheetView = () => {
                                   style={{
                                     padding: "10px 12px",
                                     textAlign: "right",
-                                    fontSize: "13px",
+                                    fontSize: "14px",
                                     color: "#555",
                                     fontWeight: "600",
                                     borderBottom: "1px solid #eee",
@@ -2357,7 +2385,7 @@ const JobsheetView = () => {
                                       {labor.completed_at && (
                                         <div
                                           style={{
-                                            fontSize: "12px",
+                                            fontSize: "14px",
                                             color: "#777",
                                             marginTop: "3px",
                                           }}
@@ -2498,7 +2526,7 @@ const JobsheetView = () => {
                                 border: "none",
                                 borderRadius: "6px",
                                 padding: "8px 12px",
-                                fontSize: "13px",
+                                fontSize: "14px",
                                 fontWeight: "500",
                                 cursor: "pointer",
                                 transition: "background-color 0.2s",
@@ -2569,7 +2597,7 @@ const JobsheetView = () => {
                                   <div
                                     style={{
                                       fontWeight: "500",
-                                      fontSize: "13px",
+                                      fontSize: "14px",
                                     }}
                                   >
                                     IVA Standard (21%)
@@ -2607,7 +2635,7 @@ const JobsheetView = () => {
                                   <div
                                     style={{
                                       fontWeight: "500",
-                                      fontSize: "13px",
+                                      fontSize: "14px",
                                     }}
                                   >
                                     IVA Reduced (10.5%)
@@ -2658,7 +2686,7 @@ const JobsheetView = () => {
                                   <div
                                     style={{
                                       fontWeight: "500",
-                                      fontSize: "13px",
+                                      fontSize: "14px",
                                     }}
                                   >
                                     Personalized
@@ -2697,7 +2725,7 @@ const JobsheetView = () => {
                                   <div
                                     style={{
                                       fontWeight: "500",
-                                      fontSize: "13px",
+                                      fontSize: "14px",
                                     }}
                                   >
                                     Sin Impuesto (0%)
@@ -3014,7 +3042,7 @@ const JobsheetView = () => {
                               style={{
                                 color: "#888",
                                 margin: 0,
-                                fontSize: "13px",
+                                fontSize: "14px",
                               }}
                             >
                               Add a payment using the form below
@@ -3198,7 +3226,7 @@ const JobsheetView = () => {
                                     </div>
                                     <div
                                       style={{
-                                        fontSize: "12px",
+                                        fontSize: "14px",
                                         color: "#888",
                                         marginTop: "2px",
                                       }}
@@ -3508,7 +3536,7 @@ const JobsheetView = () => {
                               <div
                                 style={{
                                   fontWeight: "500",
-                                  fontSize: "13px",
+                                  fontSize: "14px",
                                   color:
                                     paymentMethod === method.id
                                       ? method.color
@@ -3945,7 +3973,7 @@ const JobsheetView = () => {
                               </div>
                               <div
                                 style={{
-                                  fontSize: "13px",
+                                  fontSize: "14px",
                                   color: "#888",
                                   marginTop: "2px",
                                 }}
@@ -3971,7 +3999,7 @@ const JobsheetView = () => {
                                   justifyContent: "center",
                                   backgroundColor: "#f9fafc",
                                   borderRadius: "4px",
-                                  fontSize: "13px",
+                                  fontSize: "14px",
                                 }}
                               >
                                 {item.quantity}
@@ -4276,7 +4304,7 @@ const JobsheetView = () => {
                                 }}
                               >
                                 <div
-                                  style={{ fontSize: "12px", color: "#666" }}
+                                  style={{ fontSize: "14px", color: "#666" }}
                                 >
                                   <span>SKU: {item.sku || "N/A"}</span>
                                   <span
@@ -4301,7 +4329,7 @@ const JobsheetView = () => {
                                   style={{
                                     fontWeight: "600",
                                     color: "#5932EA",
-                                    fontSize: "13px",
+                                    fontSize: "14px",
                                   }}
                                 >
                                   ${parseFloat(item.sale).toFixed(2)}
@@ -4370,7 +4398,7 @@ const JobsheetView = () => {
                             style={{
                               margin: "4px 0 0 0",
                               color: "#888",
-                              fontSize: "13px",
+                              fontSize: "14px",
                             }}
                           >
                             We couldn't find any products that match "
@@ -4422,7 +4450,7 @@ const JobsheetView = () => {
                           </div>
                           <div
                             style={{
-                              fontSize: "13px",
+                              fontSize: "14px",
                               color: "#5932EA",
                               marginTop: "4px",
                             }}
@@ -4446,7 +4474,7 @@ const JobsheetView = () => {
                           <label
                             style={{
                               display: "block",
-                              fontSize: "13px",
+                              fontSize: "14px",
                               color: "#666",
                               marginBottom: "6px",
                             }}
@@ -4530,7 +4558,7 @@ const JobsheetView = () => {
                         <div>
                           <div
                             style={{
-                              fontSize: "13px",
+                              fontSize: "14px",
                               color: "#666",
                               marginBottom: "6px",
                               textAlign: "right",
@@ -4635,7 +4663,7 @@ const JobsheetView = () => {
                           color: "#666",
                           border: "none",
                           cursor: "pointer",
-                          fontSize: "13px",
+                          fontSize: "14px",
                         }}
                       >
                         Cancel
@@ -4815,7 +4843,7 @@ const JobsheetView = () => {
                             ? "Success"
                             : "Error"}
                         </div>
-                        <div style={{ fontSize: "13px", marginTop: "2px" }}>
+                        <div style={{ fontSize: "14px", marginTop: "2px" }}>
                           {notification.message}
                         </div>
                       </div>
@@ -5000,7 +5028,7 @@ const JobsheetView = () => {
             borderRadius: "12px",
             flex: 1
           }}>
-            <div style={{ fontSize: "13px", opacity: "0.9", marginBottom: "4px" }}>Total Labor</div>
+            <div style={{ fontSize: "14px", opacity: "0.9", marginBottom: "4px" }}>Total Labor</div>
             <div style={{ fontSize: "20px", fontWeight: "700" }}>
               ${labors.reduce((sum, labor) => sum + parseFloat(labor.price || 0), 0).toFixed(2)}
             </div>
@@ -5012,7 +5040,7 @@ const JobsheetView = () => {
             borderRadius: "12px",
             flex: 1 
           }}>
-            <div style={{ fontSize: "13px", opacity: "0.9", marginBottom: "4px" }}>Completed</div>
+            <div style={{ fontSize: "14px", opacity: "0.9", marginBottom: "4px" }}>Completed</div>
             <div style={{ display: "flex", alignItems: "baseline", gap: "6px" }}>
               <div style={{ fontSize: "20px", fontWeight: "700" }}>
                 {labors.filter(labor => labor.is_completed === 1).length}
@@ -5029,7 +5057,7 @@ const JobsheetView = () => {
             borderRadius: "12px",
             flex: 1 
           }}>
-            <div style={{ fontSize: "13px", opacity: "0.9", marginBottom: "4px" }}>Billed Amount</div>
+            <div style={{ fontSize: "14px", opacity: "0.9", marginBottom: "4px" }}>Billed Amount</div>
             <div style={{ fontSize: "20px", fontWeight: "700" }}>
               ${labors.filter(labor => labor.is_completed === 1).reduce((sum, labor) => sum + parseFloat(labor.price || 0), 0).toFixed(2)}
             </div>
@@ -5054,7 +5082,7 @@ const JobsheetView = () => {
               backgroundColor: "#f0f0ff",
               padding: "6px 12px",
               borderRadius: "8px",
-              fontSize: "13px",
+              fontSize: "14px",
               fontWeight: "600",
             }}>
               ${labors.filter(labor => labor.is_completed === 1).reduce((sum, labor) => sum + parseFloat(labor.price || 0), 0).toFixed(2)}
@@ -5133,7 +5161,7 @@ const JobsheetView = () => {
                           {labor.description}
                         </div>
                         {labor.is_completed === 1 && labor.completed_at && (
-                          <div style={{ fontSize: "12px", color: "#00AB55", marginTop: "4px", display: "flex", alignItems: "center", gap: "4px" }}>
+                          <div style={{ fontSize: "14px", color: "#00AB55", marginTop: "4px", display: "flex", alignItems: "center", gap: "4px" }}>
                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                               <path d="M20 6L9 17L4 12" stroke="#00AB55" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
                             </svg>
@@ -5640,37 +5668,7 @@ const JobsheetView = () => {
           }
           
           /* Estilos uniformes para AG Grid */
-.ag-theme-alpine {
-  --ag-header-height: 30px;
-  --ag-row-height: 50px;
-  --ag-header-foreground-color: #333;
-  --ag-header-background-color: #F9FBFF;
-  --ag-odd-row-background-color: #fff;
-  --ag-row-border-color: rgba(0, 0, 0, 0.1);
-  --ag-cell-horizontal-padding: 12px;
-  --ag-borders: none;
-  --ag-font-size: 14px;
-  --ag-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-}
-          
-.ag-theme-alpine .ag-header {
-  border-bottom: 1px solid #5932EA;
-}
-          
-.ag-theme-alpine .ag-cell {
-  display: flex;
-  align-items: center;
-}
-
-.custom-header {
-  background-color: #F9FBFF !important;
-  font-weight: 600 !important;
-  color: #333 !important;
-  border-bottom: 1px solid #5932EA !important;
-  text-align: left !important;
-  padding-left: 12px !important;
-}
-          
+    
           /* Estilo uniforme para botones de estado */
           .status-btn {
             padding: 4px 10px;
@@ -5701,6 +5699,146 @@ const JobsheetView = () => {
           taxName={taxName}
         />
       )}
+      {currentJobsheet && (
+  <div className="vehicle-info-section mb-3">
+    <div className="card">
+      <div className="card-header d-flex justify-content-between align-items-center">
+        <h5 className="mb-0">Vehículo</h5>
+        <button 
+          className="btn btn-sm btn-outline-primary"
+          onClick={() => setShowSpecsModal(true)}
+        >
+          Ver Especificaciones
+        </button>
+      </div>
+      <div className="card-body">
+        {/* Información del vehículo */}
+        <p><strong>Marca:</strong> {currentJobsheet.vehicle_brand || currentJobsheet.brand}</p>
+        <p><strong>Modelo:</strong> {currentJobsheet.vehicle_model || currentJobsheet.model}</p>
+        
+        {/* Añadir especificaciones esenciales */}
+        <BikeSpecificationsViewer
+          brand={currentJobsheet.vehicle_brand || currentJobsheet.brand}
+          model={currentJobsheet.vehicle_model || currentJobsheet.model}
+          minimal={true}
+        />
+      </div>
+    </div>
+  </div>
+)}
+
+{/* Modal para mostrar todas las especificaciones */}
+{showSpecsModal && currentJobsheet && (
+ <div
+ style={{
+   position: "fixed",
+   top: 0,
+   left: 0,
+   right: 0,
+   bottom: 0,
+   backgroundColor: "rgba(0, 0, 0, 0.6)",
+   backdropFilter: "blur(5px)",
+   display: "flex",
+   justifyContent: "center",
+   alignItems: "center",
+   zIndex: 1000,
+ }}
+>
+ <div
+   style={{
+     backgroundColor: "white",
+     borderRadius: "16px",
+     width: "900px",
+     maxWidth: "90%",
+     maxHeight: "85vh", 
+     boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+     display: "flex",
+     flexDirection: "column",
+     overflow: "hidden",
+     animation: "modalFadeIn 0.3s ease",
+   }}
+ >
+      {/* Header with gradient */}
+      <div
+        style={{
+          background: "linear-gradient(135deg, #5932EA 0%, #4321C9 100%)",
+          padding: "16px 24px",
+          color: "white",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+          <FontAwesomeIcon icon={faMotorcycle} style={{ fontSize: "1.5rem" }} />
+          <h3 style={{ margin: 0, fontSize: "1.2rem", fontWeight: 600 }}>
+            Especificaciones: {currentJobsheet.vehicle_brand || currentJobsheet.brand} {currentJobsheet.vehicle_model || currentJobsheet.model}
+          </h3>
+        </div>
+        <button
+          onClick={() => setShowSpecsModal(false)}
+          style={{
+            background: "rgba(255, 255, 255, 0.2)",
+            border: "none",
+            color: "white",
+            width: "32px",
+            height: "32px",
+            borderRadius: "50%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: "20px",
+            cursor: "pointer",
+          }}
+        >
+          ×
+        </button>
+      </div>
+
+      {/* Content area */}
+      <div style={{ 
+        overflow: "auto", 
+        padding: "20px 24px",
+        flex: 1,
+      }}>
+        <BikeSpecificationsViewer
+          brand={currentJobsheet.vehicle_brand || currentJobsheet.brand}
+          model={currentJobsheet.vehicle_model || currentJobsheet.model}
+        />
+      </div>
+      
+      {/* Footer */}
+      <div style={{
+        padding: "16px 24px",
+        borderTop: "1px solid #eee",
+        display: "flex",
+        justifyContent: "flex-end",
+        alignItems: "center",
+        backgroundColor: "#fafbfd",
+      }}>
+        <button
+          onClick={() => setShowSpecsModal(false)}
+          style={{
+            padding: "10px 24px",
+            backgroundColor: "#5932EA",
+            color: "white",
+            border: "none",
+            borderRadius: "10px",
+            cursor: "pointer",
+            fontSize: "14px",
+            fontWeight: "600",
+            transition: "all 0.2s",
+            boxShadow: "0 2px 6px rgba(89, 50, 234, 0.2)",
+          }}
+          onMouseOver={(e) => e.currentTarget.style.backgroundColor = "#4321C9"}
+          onMouseOut={(e) => e.currentTarget.style.backgroundColor = "#5932EA"}
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+)}
     </>
   );
 };
